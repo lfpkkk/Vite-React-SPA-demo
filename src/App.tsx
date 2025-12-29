@@ -1,7 +1,21 @@
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 import { useState } from 'react'
 import './App.css'
 
-function App() {
+function Home() {
+  return (
+    <div className="home">
+      <h1>Welcome to the SPA</h1>
+      <ul className="entry-list">
+        <li>
+          <Link to="/upload">Large File Upload</Link>
+        </li>
+      </ul>
+    </div>
+  )
+}
+
+function Upload() {
   const [file, setFile] = useState<File | null>(null)
   const [progress, setProgress] = useState(0)
   const [uploading, setUploading] = useState(false)
@@ -38,15 +52,16 @@ function App() {
       alert('Upload failed!')
     })
 
-    xhr.open('POST', 'http://localhost:3000/upload') // Local backend endpoint
+    xhr.open('POST', 'http://localhost:3000/upload')
     const formData = new FormData()
     formData.append('file', file)
     xhr.send(formData)
   }
 
   return (
-    <div className="app">
+    <div className="upload">
       <h1>Large File Upload</h1>
+      <Link to="/">Back to Home</Link>
       <input type="file" onChange={handleFileChange} />
       {file && (
         <div>
@@ -63,6 +78,17 @@ function App() {
         </div>
       )}
     </div>
+  )
+}
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/upload" element={<Upload />} />
+      </Routes>
+    </Router>
   )
 }
 
