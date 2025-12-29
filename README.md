@@ -29,8 +29,8 @@ The backend will run on `http://localhost:3000` and provide the `/upload` endpoi
 ### Full Setup
 
 1. Install dependencies: `npm install`
-2. Start the backend: `npm run server`
-3. Start the frontend: `npm run dev`
+2. Start the backend: `npm run server` (with HMR via nodemon)
+3. Start the frontend: `npm run dev` (with HMR via Vite)
 4. Open `http://localhost:5173` in your browser
 
 ### Build for Production
