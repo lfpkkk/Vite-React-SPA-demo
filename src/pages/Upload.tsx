@@ -92,7 +92,7 @@ function Upload() {
           style={{ display: 'none' }}
         />
         {file ? (
-          <div className="file-info">
+          <div className="file-info" onClick={(e) => e.stopPropagation()}>
             <p>Selected file: <strong>{file.name}</strong></p>
             <p>Size: {(file.size / 1024 / 1024).toFixed(2)} MB</p>
             <button onClick={handleUpload} disabled={uploading} className="upload-btn">
