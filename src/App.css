@@ -39,38 +39,136 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: 2rem;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
-.upload a {
+.upload h1 {
+  color: #333;
+  font-size: 2.5rem;
+  margin-bottom: 0;
+}
+
+.back-link {
+  align-self: flex-start;
   color: #007bff;
   text-decoration: none;
+  font-weight: 500;
+  margin-bottom: 1rem;
 }
 
-.upload a:hover {
+.back-link:hover {
   text-decoration: underline;
 }
 
-.progress-bar {
-  width: 300px;
-  height: 20px;
-  background-color: #f0f0f0;
+.dropzone {
+  border: 2px dashed #ccc;
   border-radius: 10px;
+  padding: 3rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #fafafa;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.dropzone:hover {
+  border-color: #007bff;
+  background-color: #f0f8ff;
+}
+
+.dropzone.active {
+  border-color: #28a745;
+  background-color: #f8fff8;
+}
+
+.dropzone-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.icon {
+  font-size: 3rem;
+  opacity: 0.7;
+}
+
+.dropzone-content p {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #555;
+}
+
+.dropzone-content small {
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.file-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.file-info p {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.upload-btn {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.upload-btn:hover:not(:disabled) {
+  background-color: #218838;
+}
+
+.upload-btn:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.progress-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 25px;
+  background-color: #e9ecef;
+  border-radius: 12px;
   overflow: hidden;
   position: relative;
 }
 
 .progress {
   height: 100%;
-  background-color: #4caf50;
-  transition: width 0.3s;
+  background: linear-gradient(90deg, #28a745, #20c997);
+  transition: width 0.3s ease;
 }
 
-.progress-bar span {
+.progress-text {
   position: absolute;
-  top: 0;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
   color: white;
   font-weight: bold;
+  font-size: 0.9rem;
 }

@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import './App.css'
 
 function Home() {
@@ -19,12 +19,40 @@ function Upload() {
   const [file, setFile] = useState<File | null>(null)
   const [progress, setProgress] = useState(0)
   const [uploading, setUploading] = useState(false)
+  const [isDragOver, setIsDragOver] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = (selectedFile: File) => {
+    setFile(selectedFile)
+  }
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0]
     if (selectedFile) {
-      setFile(selectedFile)
+      handleFileSelect(selectedFile)
     }
+  }
+
+  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault()
+    setIsDragOver(false)
+    const droppedFile = event.dataTransfer.files[0]
+    if (droppedFile) {
+      handleFileSelect(droppedFile)
+    }
+  }
+
+  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault()
+    setIsDragOver(true)
+  }
+
+  const handleDragLeave = () => {
+    setIsDragOver(false)
+  }
+
+  const handleClick = () => {
+    fileInputRef.current?.click()
   }
 
   const handleUpload = () => {
@@ -45,6 +73,8 @@ function Upload() {
     xhr.addEventListener('load', () => {
       setUploading(false)
       alert('Upload complete!')
+      setFile(null)
+      setProgress(0)
     })
 
     xhr.addEventListener('error', () => {
@@ -61,20 +91,42 @@ function Upload() {
   return (
     <div className="upload">
       <h1>Large File Upload</h1>
-      <Link to="/">Back to Home</Link>
-      <input type="file" onChange={handleFileChange} />
-      {file && (
-        <div>
-          <p>Selected file: {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)</p>
-          <button onClick={handleUpload} disabled={uploading}>
-            {uploading ? 'Uploading...' : 'Upload'}
-          </button>
-        </div>
-      )}
+      <Link to="/" className="back-link">← Back to Home</Link>
+      <div
+        className={`dropzone ${isDragOver ? 'active' : ''}`}
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onClick={handleClick}
+      >
+        <input
+          ref={fileInputRef}
+          type="file"
+          onChange={handleInputChange}
+          style={{ display: 'none' }}
+        />
+        {file ? (
+          <div className="file-info">
+            <p>Selected file: <strong>{file.name}</strong></p>
+            <p>Size: {(file.size / 1024 / 1024).toFixed(2)} MB</p>
+            <button onClick={handleUpload} disabled={uploading} className="upload-btn">
+              {uploading ? 'Uploading...' : 'Upload File'}
+            </button>
+          </div>
+        ) : (
+          <div className="dropzone-content">
+            <div className="icon">📁</div>
+            <p>{isDragOver ? 'Drop the file here...' : 'Drag & drop a file here, or click to select'}</p>
+            <small>Supports images, videos, audio, documents, and more</small>
+          </div>
+        )}
+      </div>
       {uploading && (
-        <div className="progress-bar">
-          <div className="progress" style={{ width: `${progress}%` }}></div>
-          <span>{progress.toFixed(2)}%</span>
+        <div className="progress-container">
+          <div className="progress-bar">
+            <div className="progress" style={{ width: `${progress}%` }}></div>
+          </div>
+          <span className="progress-text">{progress.toFixed(1)}%</span>
         </div>
       )}
     </div>
