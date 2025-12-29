@@ -33,11 +33,60 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 // Upload endpoint
-app.post('/upload', upload.single('file'), (req, res) => {
-  if (!req.file) {
-    return res.status(400).send('No file uploaded.');
+app.post('/upload', upload.array('files', 10), (req, res) => {
+  if (!req.files || (req.files as Express.Multer.File[]).length === 0) {
+    return res.status(400).send('No files uploaded.');
   }
-  res.send({ message: 'File uploaded successfully', filename: req.file.filename });
+  const uploadedFiles = (req.files as Express.Multer.File[]).map(file => ({
+    filename: file.filename,
+    originalname: file.originalname,
+    size: file.size,
+    mimetype: file.mimetype
+  }));
+  res.send({ message: 'Files uploaded successfully', files: uploadedFiles });
+});
+
+// List files endpoint
+app.get('/files', (req, res) => {
+  fs.readdir(uploadsDir, (err, files) => {
+    if (err) {
+      return res.status(500).send('Unable to list files');
+    }
+    const fileDetails = files.map(filename => {
+      const filePath = path.join(uploadsDir, filename);
+      const stats = fs.statSync(filePath);
+      return {
+        filename,
+        size: stats.size,
+        mimetype: 'application/octet-stream', // Could be improved with mime types
+        uploadDate: stats.mtime
+      };
+    });
+    res.send(fileDetails);
+  });
+});
+
+// Download file endpoint
+app.get('/files/:filename', (req, res) => {
+  const filename = req.params.filename;
+  const filePath = path.join(uploadsDir, filename);
+  if (fs.existsSync(filePath)) {
+    res.download(filePath);
+  } else {
+    res.status(404).send('File not found');
+  }
+});
+
+// Delete file endpoint
+app.delete('/files/:filename', (req, res) => {
+  const filename = req.params.filename;
+  const filePath = path.join(uploadsDir, filename);
+  if (fs.existsSync(filePath)) {
+    fs.unlinkSync(filePath);
+    res.send({ message: 'File deleted successfully' });
+  } else {
+    res.status(404).send('File not found');
+  }
 });
 
 app.listen(port, () => {
